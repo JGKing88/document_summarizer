@@ -1,3 +1,6 @@
+import openai
+openai.api_key = "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"
+
 def aggregate_summary(input, TOKEN_LIMIT=2000):
   """
   input: list of summaries (each summary is a string)
