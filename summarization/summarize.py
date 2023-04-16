@@ -4,19 +4,21 @@ config = configparser.ConfigParser()
 from aggregate_summary import aggregate_summary
 from segment_input import segment_text
 
+import tiktoken
 import openai
 
 config.read("config.ini")
 openai.api_key = config["DEFAULT"]["OPENAI_API_KEY"]
 CONTEXT_WINDOW = int(config["DEFAULT"]["CONTEXT_WINDOW"])
-TOKEN_LENGTH = int(config["DEFAULT"]["TOKEN_LENGTH"])
 
 def summarize(input, CONTEXT_WINDOW=CONTEXT_WINDOW, summary_length=None):
-    MAX_SEGMENT_LENGTH = CONTEXT_WINDOW // 3 -25 # calculated by fitting input text, desired summary, and summarization directions into context window
-    # print("MAX_SEGMENT_LENGTH", MAX_SEGMENT_LENGTH)
     if summary_length == None:
-        summary_length = min(len(input)//4, MAX_SEGMENT_LENGTH)
-    segmented_input = segment_text(input, SEGMENT_LENGTH=MAX_SEGMENT_LENGTH, TOKEN_LENGTH=TOKEN_LENGTH)
+       summary_length = CONTEXT_WINDOW
+    enc = tiktoken.encoding_for_model("gpt-4")
+    MAX_SEGMENT_LENGTH = CONTEXT_WINDOW // 3 -25 # calculated by fitting input texts, desired summary, and summarization directions into context window
+    if summary_length == None:
+        summary_length = min(len(enc.encode(input))//3, MAX_SEGMENT_LENGTH)
+    segmented_input = segment_text(input, SEGMENT_LENGTH=MAX_SEGMENT_LENGTH)
     summary = aggregate_summary(segmented_input, MAX_SEGMENT_LENGTH, summary_length)
     return summary
 
@@ -427,6 +429,4 @@ tensorflow/tensor2tensor.
   
   """
 summary = summarize(input)
-print(len(summary))
-for i in range(len(summary), 20):
-   print(summary[i:i+20])
+print(summary)
