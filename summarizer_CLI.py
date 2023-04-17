@@ -1,6 +1,8 @@
 import argparse
 import configparser
 
+from .summarization.summaraize import summarize
+
 parser = argparse.ArgumentParser(
                     prog='Document Summarizer',
                     description='',
@@ -29,3 +31,7 @@ if args.summary_length is not None:
 
 with open('example.ini', 'w') as configfile:
   config.write(configfile)
+
+with open(config['DEFAULT']['filename']) as input_file:
+    raw_text = pdftotext(input_file)
+    print(summarize(raw_text))
