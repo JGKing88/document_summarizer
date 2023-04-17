@@ -1,7 +1,6 @@
-import openai
-openai.api_key = "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"
-
 import tiktoken
+import threading
+import openai
 
 def aggregate_summary(input, bandwidth, output_length):
   """
@@ -11,25 +10,20 @@ def aggregate_summary(input, bandwidth, output_length):
   assumptions:
   (1) each summary is less than half as many tokens as the context window
   """
+  threads = []
   output = []
   enc = enc = tiktoken.encoding_for_model("gpt-4")
   for i in range(0, len(input), 2):
     if i+1 < len(input):
-      # combine input[i] and input[i+1]
-      prompt = "Combine the following two summaries of adjacent text into one summary. SUMMARY 1: " + input[i] + " SUMMARY 2: " + input[i+1]
-      response = openai.Completion.create(
-        model="text-davinci-003",
-        prompt=prompt,
-        temperature=0.7,
-        max_tokens=bandwidth,
-        top_p=1.0,
-        frequency_penalty=0.0,
-        presence_penalty=0.0
-      )
-      combined = response["choices"][0]["text"]
-      output.append(combined)
+      threads.append(threading.Thread(target=aggregate_pair, args=(input[i], input[i+1], bandwidth, output)))
     else:
-      output.append(input[i])
+      threads.append(threading.Thread(target=lone_text, args=(input[i], output)))
+  for thread in threads:
+    print("starting thread", thread.ident)
+    thread.start()
+  for thread in threads:
+    print("joining thread", thread.ident)
+    thread.join()
   if len(output) > 1:
     return aggregate_summary(output, bandwidth, output_length)
   
@@ -51,3 +45,19 @@ def aggregate_summary(input, bandwidth, output_length):
       )
 
   return response["choices"][0]["text"]
+
+def aggregate_pair(text1, text2, bandwidth, output):
+  prompt = "Combine the following two summaries of adjacent text into one summary. SUMMARY 1: " + text1 + " SUMMARY 2: " + text2
+  response = openai.Completion.create(
+    model="text-davinci-003",
+    prompt=prompt,
+    temperature=0.7,
+    max_tokens=bandwidth,
+    top_p=1.0,
+    frequency_penalty=0.0,
+    presence_penalty=0.0
+  )
+  output.append(response["choices"][0]["text"])
+
+def lone_text(text, output):
+  output.append(text)
