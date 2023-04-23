@@ -17,7 +17,7 @@ def aggregate_summary(input, bandwidth, output_length):
   output = [""]*len(input)
   messages = []
   threads = []
-  output_index = [0]
+  output_index = 0
   for i in range(0, len(input), 1):
     # merge
     if i+1 < len(input) and (cur_agg_length[0] > output_length):
@@ -25,10 +25,12 @@ def aggregate_summary(input, bandwidth, output_length):
       if i%2 == 1:
         continue
       threads.append(threading.Thread(target=combine_summaries, args=(input[i], input[i+1], bandwidth, output, output_index, cur_agg_length)))
+      output_index += 1
 
     # lone summarization: no merging
     else:
       threads.append(threading.Thread(target=lone_summary, args=(input[i], bandwidth, output, output_index, cur_agg_length)))
+      output_index += 1
 
 
   for thread in threads:
@@ -59,9 +61,8 @@ def combine_summaries(text1, text2, bandwidth, output, output_index, cur_agg_len
         temperature=0.2,
         max_tokens=bandwidth,
     )
-  output[output_index[0]] = response.choices[0].message.content
-  output_index[0] += 1
-  cur_agg_length[0] += len(enc.encode(output[output_index[0]])) - len(enc.encode(text1)) - len(enc.encode(text2))
+  output[output_index] = response.choices[0].message.content
+  cur_agg_length[0] += len(enc.encode(output[output_index])) - len(enc.encode(text1)) - len(enc.encode(text2))
 
 def lone_summary(text, bandwidth, output, output_index, cur_agg_length):
   enc = tiktoken.encoding_for_model("gpt-4")
@@ -73,6 +74,6 @@ def lone_summary(text, bandwidth, output, output_index, cur_agg_length):
         temperature=0.2,
         max_tokens=bandwidth,
     )
-  output[output_index[0]] = response.choices[0].message.content
-  output_index[0] += 1
-  cur_agg_length[0] += len(enc.encode(output[output_index[0]])) - len(enc.encode(text))
+  output[output_index] = response.choices[0].message.content
+  output_index += 1
+  cur_agg_length[0] += len(enc.encode(output[output_index])) - len(enc.encode(text))
