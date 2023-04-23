@@ -12,7 +12,7 @@ from dotenv import load_dotenv
 import ds_config
 load_dotenv()
 
-openai.api_key = Config.api_key() #os.getenv("OPENAI_API_KEY")
+openai.api_key = ds_config.api_key() #os.getenv("OPENAI_API_KEY")
 
 app = Flask(__name__)
 CORS(app)
