@@ -1,6 +1,5 @@
 from flask import Flask, render_template, request, jsonify
 from flask_cors import CORS
-import PyPDF2
 from io import BytesIO
 # import pdftotext
 from transformers import GPTJForCausalLM, AutoTokenizer

@@ -4,8 +4,14 @@ body {
     color: #333;
 }
 
-.container {
-    max-width: 800px;
+#summary-container {
+    overflow-x: hidden;
+    overflow-y: auto;
+    max-height: 400px;
+    resize: vertical;
+    padding: 1rem;
+    border: 1px solid #e0e0e0;
+    border-radius: 1rem;
 }
 
 .card {
@@ -28,14 +34,6 @@ body {
     border-radius: 0 0 1rem 1rem;
     overflow-wrap: break-word;
     overflow-x: clip;
-}
-
-.scrollable-content {
-    height: 200px; 
-    overflow-y: scroll;
-    overflow-x: hidden;
-    word-wrap: break-word;
-    padding-right: 15px;
 }
 
 .btn {
@@ -75,6 +73,12 @@ body {
     margin-bottom: 1rem;
 }
 
+.container {
+    margin-bottom: 6rem; 
+}
+
+
+
 @media (prefers-color-scheme: dark) {
     body {
         background-color: #333;
@@ -97,41 +101,3 @@ body {
         border-color: #f5f5f5;
     }
 }
-
-
-/* body {
-    font-family: Arial, sans-serif;
-    background-color: #f5f5f5;
-    margin: 0;
-    padding: 0;
-}
-
-.container {
-    max-width: 900px;
-    margin: 0 auto;
-}
-
-.card {
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-.scrollable-content {
-    height: 200px; 
-    overflow-y: scroll;
-    overflow-x: hidden;
-    word-wrap: break-word;
-    padding-right: 15px;
-}
-
-.card-header {
-    background-color: #1da1f2;
-    color: white;
-}
-
-button {
-    background-color: #1da1f2;
-    border: none;
-}
-
-input[type="file"] {
-    cursor: pointer;
-} */
