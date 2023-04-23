@@ -129,5 +129,3 @@ dmypy.json
 .pyre/
 config.ini
 
-.ds/
-ds_config.py
