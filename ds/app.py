@@ -10,8 +10,11 @@ import os
 import openai
 from dotenv import load_dotenv
 import ds_config
+import tokenization
+
 load_dotenv()
 
+#Need to create a file ds_config.py that returns the api_key as a string on calling api_key()
 openai.api_key = ds_config.api_key() #os.getenv("OPENAI_API_KEY")
 
 app = Flask(__name__)
@@ -43,6 +46,8 @@ def process_pdf_and_user_information(uploaded_file, user_information="", summary
         if len(line.split(' '))>1:
             corrected_string.append(line)
     document = "\n".join(corrected_string)
+    tokenized_document = tokenization.tok_doc(document)
+    max_sum_len = tokenization.max_sum_len(tokenized_document)
     #print(final_text)
     #print(s)
 
@@ -55,7 +60,7 @@ def process_pdf_and_user_information(uploaded_file, user_information="", summary
                 {"role": "user", "content": prompt_prompt},
             ],
         temperature=0.2, #[0,2] higher values are more random (want low randomnes)
-        max_tokens=64,
+        max_tokens=max_sum_len,
     )
 
     response = openai.ChatCompletion.create(
