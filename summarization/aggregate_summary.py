@@ -10,54 +10,69 @@ def aggregate_summary(input, bandwidth, output_length):
   assumptions:
   (1) each summary is less than half as many tokens as the context window
   """
+  enc = tiktoken.encoding_for_model("gpt-4")
+
+  # current length of output (only gets shorter as we iterate through input's indices)
+  cur_agg_length = [sum(len(enc.encode(summary)) for summary in input)]
+  output = [""]*len(input)
+  messages = []
   threads = []
-  output = []
-  enc = enc = tiktoken.encoding_for_model("gpt-4")
-  for i in range(0, len(input), 2):
-    if i+1 < len(input):
-      threads.append(threading.Thread(target=aggregate_pair, args=(input[i], input[i+1], bandwidth, output)))
+  output_index = [0]
+  for i in range(0, len(input), 1):
+    # merge
+    if i+1 < len(input) and (cur_agg_length[0] > output_length):
+      # skip if combined with previous index
+      if i%2 == 1:
+        continue
+      threads.append(threading.Thread(target=combine_summaries, args=(input[i], input[i+1], bandwidth, output, output_index, cur_agg_length)))
+
+    # lone summarization: no merging
     else:
-      threads.append(threading.Thread(target=lone_text, args=(input[i], output)))
+      threads.append(threading.Thread(target=lone_summary, args=(input[i], bandwidth, output, output_index, cur_agg_length)))
+
+
   for thread in threads:
-    print("starting thread", thread.ident)
     thread.start()
   for thread in threads:
-    print("joining thread", thread.ident)
     thread.join()
-  if len(output) > 1:
+  
+
+  # recursive case: current output is too long
+  if cur_agg_length[0] > output_length:
     return aggregate_summary(output, bandwidth, output_length)
   
+  # handles output is empty list
   if len(output) == 0:
     return ""
   
   # get final output to desired length
-  if len(enc.encode(output[0])) <= output_length:
-    return output[0]
-  prompt = "Summarize the following text: " + output[0]
-  response = openai.Completion.create(
-        model="text-davinci-003",
-        prompt=prompt,
-        temperature=0.7,
-        max_tokens=output_length,
-        top_p=1.0,
-        frequency_penalty=0.0,
-        presence_penalty=0.0
-      )
+  output_str = " ".join(output)
+  return output_str
 
-  return response["choices"][0]["text"]
-
-def aggregate_pair(text1, text2, bandwidth, output):
+def combine_summaries(text1, text2, bandwidth, output, output_index, cur_agg_length):
+  enc = tiktoken.encoding_for_model("gpt-4")
   prompt = "Combine the following two summaries of adjacent text into one summary. SUMMARY 1: " + text1 + " SUMMARY 2: " + text2
-  response = openai.Completion.create(
-    model="text-davinci-003",
-    prompt=prompt,
-    temperature=0.7,
-    max_tokens=bandwidth,
-    top_p=1.0,
-    frequency_penalty=0.0,
-    presence_penalty=0.0
-  )
-  output.append(response["choices"][0]["text"])
+  message = [{"role": "user", "content": prompt}]
+  response = openai.ChatCompletion.create(
+        model="gpt-4",
+        messages=message,
+        temperature=0.2,
+        max_tokens=bandwidth,
+    )
+  output[output_index[0]] = response.choices[0].message.content
+  output_index[0] += 1
+  cur_agg_length[0] += len(enc.encode(output[output_index[0]])) - len(enc.encode(text1)) - len(enc.encode(text2))
 
-def lone_text(text, output):
-  output.append(text)
+def lone_summary(text, bandwidth, output, output_index, cur_agg_length):
+  enc = tiktoken.encoding_for_model("gpt-4")
+  prompt = "Summarize the following text" + text
+  message = [{"role": "user", "content": prompt}]
+  response = openai.ChatCompletion.create(
+        model="gpt-4",
+        messages=message,
+        temperature=0.2,
+        max_tokens=bandwidth,
+    )
+  output[output_index[0]] = response.choices[0].message.content
+  output_index[0] += 1
+  cur_agg_length[0] += len(enc.encode(output[output_index[0]])) - len(enc.encode(text))

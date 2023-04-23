@@ -1,29 +1,105 @@
-body {
-    font-family: Arial, sans-serif;
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600&display=swap');body {
+    font-family: 'Inter', 'Roboto', sans-serif;
     background-color: #f5f5f5;
-    margin: 0;
-    padding: 0;
+    color: #333;
 }
 
-.container {
-    max-width: 900px;
-    margin: 0 auto;
+#summary-container {
+    overflow-x: hidden;
+    overflow-y: auto;
+    resize: vertical;
 }
 
 .card {
+    border: none;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .card-header {
-    background-color: #1da1f2;
-    color: white;
+    background-color: #ffffff;
+    font-weight: 500;
+    font-size: 2rem;
+    border-radius: 1rem;
+    border-width: 2rem;
+    border-color: #333;
+    display: inline-block;
+    padding: none;
+    text-align: center;
 }
 
-button {
-    background-color: #1da1f2;
-    border: none;
+.card-body {
+    background-color: #ffffff;
+    padding: 2rem;
+    border-radius: 1rem;
+    overflow-wrap: break-word;
+    overflow-x: clip;
 }
 
-input[type="file"] {
-    cursor: pointer;
+.btn {
+    font-weight: 500;
+    border-radius: 1rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.btn-primary {
+    background-color: #1c7ed6;
+    border-color: #1c7ed6;
+}
+
+.btn-primary:hover {
+    background-color: #1971c2;
+    border-color: #1971c2;
+}
+
+.input-group-text {
+    font-weight: 500;
+    border-radius: 1rem;
+}
+
+.form-control {
+    border-radius: 1rem;
+}
+
+.spinner-border {
+    width: 2rem;
+    height: 2rem;
+}
+
+.container {
+    margin-bottom: 6rem; 
+}
+
+.copytext{
+	padding: 10px;
+	background: #5784f5;
+	color: #fff;
+	font-size: 18px;
+	border: none;
+	outline: none;
+	border-radius: 10px;
+	cursor: pointer;
+}
+
+
+@media (prefers-color-scheme: dark) {
+    body {
+        background-color: #333;
+        color: #f5f5f5;
+    }
+
+    .card {
+        background-color: #434343;
+    }
+
+    .card-header {
+        background-color: #434343;
+    }
+
+    .card-body {
+        background-color: #434343;
+    }
+
+    .title-container {
+        border-color: #f5f5f5;
+    }
 }
