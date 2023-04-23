@@ -128,3 +128,6 @@ dmypy.json
 # Pyre type checker
 .pyre/
 config.ini
+
+.ds/
+ds_config.py
