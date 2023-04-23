@@ -3,6 +3,7 @@ document.getElementById('upload-form').addEventListener('submit', async (e) => {
     
     const pdfFile = document.getElementById('pdf_file').files[0];
     const userInformation = document.getElementById('user_information').value;
+    const summaryDetails = document.getElementById('summary_details').value;
     
     if (!pdfFile) {
         alert('Please select a PDF file.');
@@ -12,6 +13,10 @@ document.getElementById('upload-form').addEventListener('submit', async (e) => {
     const formData = new FormData();
     formData.append('pdf_file', pdfFile);
     formData.append('user_information', userInformation);
+    formData.append('summary_details', summaryDetails);
+
+    // Show the loading icon
+    document.getElementById('loading').style.display = 'block';
 
     const response = await fetch('/upload_pdf', {
         method: 'POST',
@@ -19,6 +24,10 @@ document.getElementById('upload-form').addEventListener('submit', async (e) => {
     });
 
     const result = await response.json();
+
+    // Hide the loading icon
+    document.getElementById('loading').style.display = 'none';
+    
     displaySummary(result.summary);
 });
 
