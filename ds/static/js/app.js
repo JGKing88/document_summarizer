@@ -27,15 +27,13 @@ document.getElementById('upload-form').addEventListener('submit', async (e) => {
 
     // Hide the loading icon
     document.getElementById('loading').style.display = 'none';
-    
+
     displaySummary(result.summary);
 });
 
 function displaySummary(summary) {
-    const summaryContainer = document.getElementById('summary');
-    summaryContainer.innerHTML = `
-        <pre>${summary}</pre>
-    `;
+    const summaryContainer = document.getElementById('summary-container');
+    summaryContainer.innerHTML = summary.replace(/\n/g, '<br>');
     
     // Show the summary card
     document.getElementById('summary-card').style.display = 'block';
