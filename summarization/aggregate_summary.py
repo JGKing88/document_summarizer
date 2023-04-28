@@ -75,5 +75,4 @@ def lone_summary(text, bandwidth, output, output_index, cur_agg_length):
         max_tokens=bandwidth,
     )
   output[output_index] = response.choices[0].message.content
-  output_index += 1
   cur_agg_length[0] += len(enc.encode(output[output_index])) - len(enc.encode(text))
