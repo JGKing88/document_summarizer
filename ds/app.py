@@ -29,21 +29,21 @@ def upload_pdf():
 def process_pdf_and_user_information(uploaded_file, user_information="", summary_details=""):
     # Placeholder function for processing the PDF and user_information
     # You can implement your own summary generation logic here
-    # pdf = pdftotext.PDF(uploaded_file)
-    # s = "\n\n".join(pdf) #join all strings
-    # split = s.split('\n')
-    # corrected_string = []
-    # for line in split:
-    #     if len(line.split(' '))>1:
-    #         corrected_string.append(line)
-    # document = "\n".join(corrected_string)
-    # tokenized_document = tokenization.tok_doc(document)
-    # max_sum_len = tokenization.max_sum_len(tokenized_document)
+    pdf = pdftotext.PDF(uploaded_file)
+    s = "\n\n".join(pdf) #join all strings
+    split = s.split('\n')
+    corrected_string = []
+    for line in split:
+        if len(line.split(' '))>1:
+            corrected_string.append(line)
+    document = "\n".join(corrected_string)
+    tokenized_document = tokenization.tok_doc(document)
+    max_sum_len = tokenization.max_sum_len(tokenized_document)
     #print(final_text)
     #print(s)
 
-    document = ""
-    max_sum_len = 64
+    #document = ""
+    #max_sum_len = 64
 
     prompt_prompt = "Generate a prompt that tells ChatGPT to generate a summary of the following document for this type of user: " + user_information + " and this type of summary: " + summary_details
     prompt = openai.ChatCompletion.create(
@@ -52,8 +52,10 @@ def process_pdf_and_user_information(uploaded_file, user_information="", summary
                 {"role": "user", "content": prompt_prompt},
             ],
         temperature=0.2, #[0,2] higher values are more random (want low randomnes)
-        max_tokens=max_sum_len,
+        max_tokens=max(1000, max_sum_len),
     )
+
+    print(prompt.choices[0].message.content)
 
     response = openai.ChatCompletion.create(
         model="gpt-4",
@@ -61,7 +63,7 @@ def process_pdf_and_user_information(uploaded_file, user_information="", summary
                 {"role": "user", "content": prompt.choices[0].message.content + "\n" + document},
             ],
         temperature=0.7, #higher values are more random
-        max_tokens=64,
+        max_tokens=max(1000, max_sum_len),
         frequency_penalty=0.0, #[-2, 2] Positive values decrease the model's likelihood to repeat the same line verbatim.
         presence_penalty=-1.0 #[-2, 2] Positive values increase the model's likelihood to talk about new topics.
     )
