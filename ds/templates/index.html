@@ -18,8 +18,12 @@
                     <div class="card-body">
                         <form id="upload-form">
                             <div class="form-group">
-                                <label for="pdf_file">Upload PDF</label>
-                                <input type="file" class="form-control-file" id="pdf_file" name="pdf_file" accept="application/pdf">
+                                <!-- <label for="pdf_file" id="pdfUploadLabel" class="upload-button">Upload PDF</label>
+                                <input type="file" class="form-control-file" id="pdf_file" name="pdf_file" accept="application/pdf"> -->
+                                <input type="file" name="pdfUpload" id="pdfUpload" accept="application/pdf" hidden>
+                                <label for="pdfUpload" id="pdfUploadLabel" class="upload-button">
+                                    Upload PDF
+                                </label>
                             </div>
                             <div class="form-group">
                                 <label for="user_information">User Information</label>
