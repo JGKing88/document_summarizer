@@ -20,7 +20,7 @@
     font-weight: 500;
     font-size: 2rem;
     border-radius: 1rem;
-    border-width: 2rem;
+    border-width: 1rem;
     border-color: #333;
     display: inline-block;
     padding: none;
@@ -49,6 +49,24 @@
 .btn-primary:hover {
     background-color: #1971c2;
     border-color: #1971c2;
+}
+
+.upload-button {
+    display: inline-block;
+    background-color: #4CAF50;
+    color: white;
+    padding: 12px 24px;
+    font-size: 16px;
+    cursor: pointer;
+    border: none;
+    border-radius: 4px;
+    text-align: center;
+    text-decoration: none;
+    transition: background-color 0.3s;
+}
+
+.upload-button:hover {
+    background-color: #45a049;
 }
 
 .input-group-text {

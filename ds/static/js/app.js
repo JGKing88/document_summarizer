@@ -1,7 +1,12 @@
+document.getElementById('pdfUpload').addEventListener('change', function (event) {
+    const fileName = event.target.files[0].name;
+    document.getElementById('pdfUploadLabel').textContent = `Selected: ${fileName}`;
+});
+
 document.getElementById('upload-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     
-    const pdfFile = document.getElementById('pdf_file').files[0];
+    const pdfFile = document.getElementById('pdfUpload').files[0];
     const userInformation = document.getElementById('user_information').value;
     const summaryDetails = document.getElementById('summary_details').value;
     
