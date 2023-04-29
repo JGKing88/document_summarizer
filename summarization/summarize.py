@@ -15,14 +15,16 @@ with open("config.json") as json_data_file:
   CONTEXT_WINDOW = int(data["summarization"]["CONTEXT_WINDOW"])
 
 
-def summarize(input, CONTEXT_WINDOW=CONTEXT_WINDOW, summary_length=None):
+def summarize(input, CONTEXT_WINDOW=CONTEXT_WINDOW, summary_length=None, user_info=None):
     if summary_length == None:
-      summary_legth = CONTEXT_WINDOW
+      summary_length = CONTEXT_WINDOW
+    if user_info == None:
+      user_info = "Deafult user of this summarizer"
     enc = tiktoken.encoding_for_model("gpt-4")
-    MAX_SEGMENT_LENGTH = CONTEXT_WINDOW // 3 - 25 # calculated by fitting input texts, desired summary, and summarization directions into context window
+    MAX_SEGMENT_LENGTH = CONTEXT_WINDOW*3//4 - 50 # summary will be less than 1/4 length of input
     segmented_input = segment_text(input, SEGMENT_LENGTH=MAX_SEGMENT_LENGTH)
-    summary = aggregate_summary(segmented_input, bandwidth=MAX_SEGMENT_LENGTH, output_length=summary_length)
-    return summary
+    summary, aux_attr = aggregate_summary(segmented_input, bandwidth=MAX_SEGMENT_LENGTH//3, output_length=summary_length, user_info=user_info)
+    return summary, aux_attr
 
 
 if __name__ == "__main__":
