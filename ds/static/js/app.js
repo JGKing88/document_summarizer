@@ -39,7 +39,7 @@ document.getElementById('upload-form').addEventListener('submit', async (e) => {
 function displaySummary(summary) {
     const summaryContainer = document.getElementById('summary-container');
     summaryContainer.innerHTML = summary.replace(/\n/g, '<br>');
-    summaryContainer.innerHTML += " \n <div> <button class=\"copytext\" onclick=\"copyFunc()\"><i class=\"fa fa-clone\"></i></button> </div>"
+    summaryContainer.innerHTML += " \n <div class=\"copytext-container\"> <button class=\"copytext\" onclick=\"copyFunc()\"><i class=\"fa fa-clone\"></i></button> </div>"
     // Show the summary card
     document.getElementById('summary-card').style.display = 'block';
 }
