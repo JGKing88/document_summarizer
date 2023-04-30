@@ -8,19 +8,21 @@ import openai
 
 import json
 
-openai.api_key = "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"
-CONTEXT_WINDOW = 8000
-
+with open("config.json") as json_data_file:
+  data = json.load(json_data_file)
+  openai.api_key = data["summarization"]["OPENAI_API_KEY"]
+  CONTEXT_WINDOW = int(data["summarization"]["CONTEXT_WINDOW"])
 
 
 def summarize(input, combine_prompt, single_prompt, CONTEXT_WINDOW=CONTEXT_WINDOW, summary_length=None):
     if summary_length == None:
-      summary_length = CONTEXT_WINDOW
+      summary_length = CONTEXT_WINDOW // 3 - len(enc.encode(combine_prompt))
     enc = tiktoken.encoding_for_model("gpt-4")
-    MAX_SEGMENT_LENGTH = CONTEXT_WINDOW // 3 - len(combine_prompt) # calculated by fitting input texts, desired summary, and summarization directions into context window
+    MAX_SEGMENT_LENGTH = CONTEXT_WINDOW // 3 - len(enc.encode(combine_prompt)) # calculated by fitting input texts, desired summary, and summarization directions into context window
     segmented_input = segment_text(input, SEGMENT_LENGTH=MAX_SEGMENT_LENGTH)
-    summary = aggregate_summary(segmented_input, combine_prompt, single_prompt, bandwidth=MAX_SEGMENT_LENGTH, output_length=summary_length)
-    return summary
+    print("number of initial segments", len(segmented_input))
+    summary, aux_attr = aggregate_summary(segmented_input, combine_prompt, single_prompt, bandwidth=MAX_SEGMENT_LENGTH, output_length=summary_length)
+    return summary, aux_attr
 
 def callGPT(prompt_prompt, max_sum_len=1000):
   prompt = openai.ChatCompletion.create(
@@ -33,9 +35,9 @@ def callGPT(prompt_prompt, max_sum_len=1000):
   )
   return prompt.choices[0].message.content
 
-
 if __name__ == "__main__":
-  with open("thedead.txt", "r") as f:
+
+  with open("/Users/patricktimons/Documents/GitHub/document_summarizer/ds/summarization/thedead.txt", "r") as f:
     data = f.read()
 
   user_information = "kid"
@@ -59,4 +61,5 @@ if __name__ == "__main__":
   combine_prompt = combine_prompt + extras + "SUMMARY 1: {} SUMMARY 2: {}"
   single_prompt = single_prompt + extras + "DOCUMENT: {}"
   summary = summarize(data, combine_prompt, single_prompt, CONTEXT_WINDOW, CONTEXT_WINDOW*10)
-  print(summary)
+  print("summary", summary[0])
+  print("extra info", summary[1])
