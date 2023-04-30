@@ -1,4 +1,4 @@
 {
-    "summarization": {"OPENAI_API_KEY": "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",
+    "summarization": {"OPENAI_API_KEY": "sk-m7eI2jPXy3FqOUvYIfqAT3BlbkFJpAMytCtHcC8gIdb4dFXGbleh",
 "CONTEXT_WINDOW":  8000}
 }
