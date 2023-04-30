@@ -9,6 +9,7 @@ document.getElementById('upload-form').addEventListener('submit', async (e) => {
     const pdfFile = document.getElementById('pdfUpload').files[0];
     const userInformation = document.getElementById('user_information').value;
     const summaryDetails = document.getElementById('summary_details').value;
+    const extras = document.getElementById('extras').value;
     
     if (!pdfFile) {
         alert('Please select a PDF file.');
@@ -19,6 +20,7 @@ document.getElementById('upload-form').addEventListener('submit', async (e) => {
     formData.append('pdf_file', pdfFile);
     formData.append('user_information', userInformation);
     formData.append('summary_details', summaryDetails);
+    formData.append('extras', extras);
 
     // Show the loading icon
     document.getElementById('loading').style.display = 'block';
