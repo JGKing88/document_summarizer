@@ -26,7 +26,6 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
-config.json
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
@@ -132,3 +131,6 @@ config.ini
 
 # test files
 test.txt
+
+# keyfile
+config.json
