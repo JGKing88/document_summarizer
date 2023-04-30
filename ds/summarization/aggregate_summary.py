@@ -48,6 +48,7 @@ def aggregate_summary(input, combine_prompt, single_prompt, bandwidth, output_le
     return aggregate_summary(output, combine_prompt, single_prompt, bandwidth, output_length, aux_attr)
   
   # get final output to desired length
+  output = [str(i) for i in output]
   output_str = " ".join(output)
   return output_str, aux_attr
 
