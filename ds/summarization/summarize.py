@@ -1,18 +1,18 @@
 import configparser
 config = configparser.ConfigParser()
 
-from aggregate_summary import aggregate_summary
-from segment_input import segment_text
+from summarization.aggregate_summary import aggregate_summary
+from summarization.segment_input import segment_text
 import tiktoken
 import openai
-
+import ds_config
 import json
 
 with open("config.json") as json_data_file:
   data = json.load(json_data_file)
-  openai.api_key = data["summarization"]["OPENAI_API_KEY"]
   CONTEXT_WINDOW = int(data["summarization"]["CONTEXT_WINDOW"])
 
+openai.api_key = ds_config.api_key()
 
 def summarize(input, combine_prompt, single_prompt, CONTEXT_WINDOW=CONTEXT_WINDOW, summary_length=None):
     if summary_length == None:
@@ -51,7 +51,7 @@ def prepare_summary(document, user_information="", summary_details="", extras=""
   single_prompt = single_prompt + extras + "DOCUMENT: {}"
   summary = summarize(document, combine_prompt, single_prompt, CONTEXT_WINDOW, CONTEXT_WINDOW*10)
 
-  return summary, extras
+  return summary
 
 if __name__ == "__main__":
 
