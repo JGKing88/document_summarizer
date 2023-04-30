@@ -1,2 +1,7 @@
+import json
+
 def api_key():
-    return "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"
+    file = open("../config.json")
+    data = json.load(file)
+    return data["summarization"]["OPENAI_API_KEY"]
+

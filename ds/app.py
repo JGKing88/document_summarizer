@@ -5,7 +5,11 @@ import openai
 import ds_config
 import tokenization
 
-#Need to create a file ds_config.py that returns the api_key as a string on calling api_key()
+#Need to create a file config.json in the format
+#{
+#    "summarization": {"OPENAI_API_KEY": <KEY>,
+# "CONTEXT_WINDOW":  <CONTEXT_WINDOW_LENGTH>}
+#}
 openai.api_key = ds_config.api_key() 
 
 app = Flask(__name__)

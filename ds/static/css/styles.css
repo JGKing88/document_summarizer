@@ -16,7 +16,6 @@
 }
 
 .card-header {
-    background-color: #ffffff;
     font-weight: 500;
     font-size: 2rem;
     border-radius: 1rem;
@@ -24,6 +23,13 @@
     border-color: #333;
     display: inline-block;
     padding: none;
+    text-align: center;
+}
+
+.card-headers {
+    font-weight: 500;
+    font-size: 2rem;
+    padding-top: 1em;
     text-align: center;
 }
 
@@ -87,17 +93,20 @@
     margin-bottom: 6rem; 
 }
 
+
 .copytext{
-	padding: 10px;
-	background: #5784f5;
-	color: #fff;
-	font-size: 18px;
+	background: #fff;
+	color: #434343;
+	font-size: 1.5rem;
 	border: none;
 	outline: none;
-	border-radius: 10px;
+	border-radius: 25%;
 	cursor: pointer;
 }
 
+.copytext-container{
+    margin-top: 1rem; 
+}
 
 @media (prefers-color-scheme: dark) {
     body {
