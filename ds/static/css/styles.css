@@ -16,7 +16,6 @@
 }
 
 .card-header {
-    background-color: #ffffff;
     font-weight: 500;
     font-size: 2rem;
     border-radius: 1rem;
@@ -24,6 +23,13 @@
     border-color: #333;
     display: inline-block;
     padding: none;
+    text-align: center;
+}
+
+.card-headers {
+    font-weight: 500;
+    font-size: 2rem;
+    padding-top: 1em;
     text-align: center;
 }
 
@@ -87,9 +93,6 @@
     margin-bottom: 6rem; 
 }
 
-#summary-container{
-    padding: 0.5rem;
-}
 
 .copytext{
 	background: #fff;
