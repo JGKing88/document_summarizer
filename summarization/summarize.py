@@ -15,7 +15,7 @@ with open("config.json") as json_data_file:
   CONTEXT_WINDOW = int(data["summarization"]["CONTEXT_WINDOW"])
 
 
-def summarize(input, cobine_prompt, single_prompt, CONTEXT_WINDOW=CONTEXT_WINDOW, summary_length=None):
+def summarize(input, combine_prompt, single_prompt, CONTEXT_WINDOW=CONTEXT_WINDOW, summary_length=None):
     if summary_length == None:
       summary_length = CONTEXT_WINDOW
     if user_info == None:
