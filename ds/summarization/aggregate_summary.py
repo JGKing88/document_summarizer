@@ -81,9 +81,8 @@ def combine_summaries(text1, text2, prompt, bandwidth, output, output_index, cur
         cur_agg_length[0] += len(enc.encode(output[output_index])) - len(enc.encode(text1)) - len(enc.encode(text2))
       else:
         cur_agg_length[0] += len(enc.encode(output[output_index])) - len(enc.encode(text1))
-
     else:
       if attr not in aux_attr:
-        aux_attr[attr] = set()
-      for item in response_message[attr]:
-        aux_attr[attr].add(item)
+        aux_attr[attr] = dict()
+      for sub_key in response_message[attr]:
+        aux_attr[attr][sub_key] = response_message[attr][sub_key]
