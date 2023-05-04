@@ -1,24 +1,5 @@
-import openai
-openai.api_key = "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"
+import json
 
-def callGPT(prompt_prompt, max_sum_len=1000):
-  prompt = openai.ChatCompletion.create(
-      model="gpt-4",
-      messages=[
-              {"role": "user", "content": prompt_prompt},
-          ],
-      temperature=0.2, #[0,2] higher values are more random (want low randomnes)
-      max_tokens=max(1000, max_sum_len),
-  )
-  return prompt.choices[0].message.content
-
-doc_title = "'Attention is All you Need'"
-user_info = "A PhD candidate at MIT who is studying A.I."
-
-
-prelim_prompt =f"Generate a prompt to tell ChatGPT to define each of the following features \
-    extracted from {doc_title}. Make sure that all definitions are appropriate for this type of user: \
-      {user_info}. Also, make sure that all definitions are relative to the context of {doc_title}: \
-        {feature_class}: {features[feature_class]}"
-prompt = callGPT(prelim_prompt)
-print(prompt)
+s = """{'summary': "At the Misses Morkan's annual dance, everyone is excited and enjoying themselves. Gabriel, the nephew of the hosts, arrives with his wife Gretta, and they all share stories and laughter. Gabriel feels a bit out of place and worries about his speech, but the night goes on with music, dancing, and good company. As the evening progresses, the guests discuss various topics and enjoy each other's company.", 'vocabulary': {'caretaker': 'a person employed to look after a building or a house', 'banisters': 'the handrails of a staircase', 'goloshes': 'waterproof overshoes worn to protect shoes from rain or snow', 'pianist': 'a person who plays the piano'}, 'themes': {'family': 'the close relationships between the characters', 'tradition': "the annual dance and the guests' roles in it", 'social class': 'the differences in education and culture among the guests'}, 'characters': {'Lily': 'the caretaker’s daughter', 'Miss Kate': 'one of the hosts of the dance', 'Miss Julia': 'the other host of the dance', 'Mary Jane': 'the niece of the hosts', 'Gabriel': 'the nephew of the hosts and the main character', 'Gretta': "Gabriel's wife", 'Freddy Malins': 'a guest at the dance'}}
+"""
+print(json.loads(s))
