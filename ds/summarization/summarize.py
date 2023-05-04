@@ -23,34 +23,6 @@ def summarize(input, combine_prompt, single_prompt, CONTEXT_WINDOW=CONTEXT_WINDO
     summary, aux_attr = aggregate_summary(segmented_input, combine_prompt, single_prompt, bandwidth=MAX_SEGMENT_LENGTH, output_length=summary_length)
     return summary, aux_attr
 
-def define_features(features, user_info=""):
-  """
-  input: a dict of featueres {'feature_class': {feature1, feature2, ...}}
-  output: a dict of features to definitions
-  """
-  enc = tiktoken.encoding_for_model("gpt-4")
-  if user_info == "":
-    user_info = "an average user of a document summarization service."
-  
-  if "document title" in features:
-    doc_title = features["document title"]
-  else:
-    doc_title = "a text document"
-  
-  
-  output = dict()
-  for feature_class in features:
-    if feature_class == "document title":
-      continue
-
-    prompt = f"Define each of the following features extracted from {doc_title}. Make sure that all \
-      definitions are appropriate for this type of user: {user_info}. Also make sure that all \
-        definitions are relative to the context of {doc_title}. {feature_class}: {features}"
-    max_len = 3000 # CONTEXT_WINDOW - sum(len(enc.encode(feature)) for feature in features[feature_class]) - len(enc.encode(prompt))
-    response = callGPT(prompt, max_len)
-    output[feature_class] = response
-  return output
-
 def callGPT(prompt_prompt, max_sum_len=1000):
   prompt = openai.ChatCompletion.create(
       model="gpt-4",
@@ -77,6 +49,7 @@ def prepare_summary(document, user_information="", summary_details="", extras=""
   combine_prompt = combine_prompt + extras + "SUMMARY 1: {} SUMMARY 2: {}"
   single_prompt = single_prompt + extras + "DOCUMENT: {}"
   summary, extracted_features = summarize(document, combine_prompt, single_prompt, CONTEXT_WINDOW, CONTEXT_WINDOW*10)
+  aggregate_features(extracted_features)
   return summary, extracted_features
 
 def transform_extras(extra_info):
@@ -113,6 +86,21 @@ def transform_extras(extra_info):
   output += str(example).replace('{', '{{').replace('}', '}}') + ". "
   return output
 
+def aggregate_features(features):
+  """
+  input
+  features: dictionary {"vocabulary": {"word": {"def1", "def2"}}}
+  output: dictionary, but each instance of a feature (word/character) only has one defintion
+  """
+  for feature in features:
+    for instance in features[feature]:
+      if len(features[feature][instance]) > 1:
+        # aggregate
+        prompt = f"Combine the following definitions/descriptions of \"{instance}\" into one cohesive definition/description: \
+          {features[feature][instance]}. Make sure the output is in plain text."
+        response = callGPT(prompt)
+        features[feature][instance] = response
+
 
 
 if __name__ == "__main__":
@@ -123,6 +111,7 @@ if __name__ == "__main__":
   user_information = "kid"
   summary_details = "short"
   extras = "vocabulary, themes, characters"
-  summary = prepare_summary(data, user_information,summary_details,extras)
+  summary, features = prepare_summary(data, user_information,summary_details,extras)
   print("the summary: \n" + summary)
+  print("the features: \n" + str(features))
   

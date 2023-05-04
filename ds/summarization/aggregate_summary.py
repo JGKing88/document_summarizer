@@ -55,7 +55,6 @@ def aggregate_summary(input, combine_prompt, single_prompt, bandwidth, output_le
 
 
 def combine_summaries(text1, text2, prompt, bandwidth, output, output_index, cur_agg_length, aux_attr, combine_summaries=True):
-  print("combine_summaries called")
   enc = tiktoken.encoding_for_model("gpt-4")
   if combine_summaries:
     prompt = prompt.format(text1, text2)
@@ -85,4 +84,6 @@ def combine_summaries(text1, text2, prompt, bandwidth, output, output_index, cur
       if attr not in aux_attr:
         aux_attr[attr] = dict()
       for sub_key in response_message[attr]:
-        aux_attr[attr][sub_key] = response_message[attr][sub_key]
+        if sub_key not in aux_attr[attr]:
+          aux_attr[attr][sub_key] = set()
+        aux_attr[attr][sub_key].add(response_message[attr][sub_key])
