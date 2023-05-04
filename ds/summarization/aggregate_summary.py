@@ -72,8 +72,6 @@ def combine_summaries(text1, text2, prompt, bandwidth, output, output_index, cur
     response_message = json.loads(response.choices[0].message.content)
   except:
     print("ERROR: unable to load GPT resonse as a json")
-    print("response: ", response.choices[0].message.content)
-    print("response object", response)
     return ""
   
   for attr in response_message:

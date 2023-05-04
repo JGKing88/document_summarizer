@@ -73,18 +73,18 @@ def prepare_summary(document, user_information="", summary_details="", extras=""
 
   if extras != "":
      extras = transform_extras(extras)
-     print("extras: " + extras)
 
   combine_prompt = combine_prompt + extras + "SUMMARY 1: {} SUMMARY 2: {}"
   single_prompt = single_prompt + extras + "DOCUMENT: {}"
   summary, extracted_features = summarize(document, combine_prompt, single_prompt, CONTEXT_WINDOW, CONTEXT_WINDOW*10)
-  print('extracted features :\n' + str(extracted_features))
-  return summary
+  return summary, extracted_features
 
 def transform_extras(extra_info):
   """
-  will generate the extras portion of the prompt
-  assumes that extra_info is seperated by commas: extra1, extra2,extra3,...
+  inputs:
+  extra_info: a comma seperated list of desired features: extra1, extra2,extra3,...
+  outputs:
+  the extras portion of the prompt
   """
   extras = extra_info.replace(" ", "").split(",")
 
@@ -126,27 +126,3 @@ if __name__ == "__main__":
   summary = prepare_summary(data, user_information,summary_details,extras)
   print("the summary: \n" + summary)
   
-  # single_prompt_prompt = "Generate a prompt to tell ChatGPT to generate a summary of a document \
-  #   for this type of user: " + user_information + " and this type of summary: " + summary_details + ". "
-  # single_prompt = callGPT(single_prompt_prompt)
-
-  # combine_prompt_prompt = "Generate a prompt to tell ChatGPT to combine two summaries into one summary \
-  #   for this type of user: " + user_information + " and this type of summary: " + summary_details + ". "
-  # combine_prompt = callGPT(combine_prompt_prompt)
-
-  # if extras != "":
-  #    extras = " Along with the summary, include " + extras + ". Make sure the response is in JSON format. The key of the summary should be 'summary', \
-  #     the key of the title should be 'document title', and so on."
-
-  # print(combine_prompt + extras)
-  # print(single_prompt + extras)
-  
-  # combine_prompt = combine_prompt + extras + "SUMMARY 1: {} SUMMARY 2: {}"
-  # single_prompt = single_prompt + extras + "DOCUMENT: {}"
-  # summary, features = summarize(data, combine_prompt, single_prompt, CONTEXT_WINDOW, CONTEXT_WINDOW*10)
-  # print("summary", summary)
-  # print("extra info", features)
-  # features = {'document title': 'A Festive Gathering', 'characters': {'Miss Julia', 'Mary Jane', 'Freddy Malins', "Mr. Bartell D'Arcy", 'Michael Furey', 'Mrs Malins', "Mr Bartell D'Arcy", 'Mr Browne', 'Gretta', 'Miss Furlong', 'Mr. Browne', 'Aunt Julia', 'Miss Kate', 'Miss Ivors', 'Aunt Kate', 'Miss Daly', 'Gabriel', 'Lily', 'Mrs. Conroy', "Miss O'Callaghan"}, 'themes': {'Irish hospitality', 'Marriage', 'Laughter', 'Tradition', 'Festive Gatherings', 'Food and Drink', 'Disagreements', 'Music and Opera', 'Celebration', 'Nostalgia', 'Passion', 'Death', 'Memory', 'Resentment', 'Cultural heritage', 'Family', 'Dance', 'Love', 'Music', 'Regret'}}
-  # print("definitons: \n", define_features(features, user_information))
-  # print(callGPT("how many keys are in this json object: " + str(features)))
-  # print(transform_extras(extras))
