@@ -30,23 +30,57 @@ document.getElementById('upload-form').addEventListener('submit', async (e) => {
         body: formData
     });
 
-    const result = await response.json();
-
+    
+    const jsonResult = await response.json();
+    var result = JSON.parse(jsonResult.summary);
+    
     // Hide the loading icon
     document.getElementById('loading').style.display = 'none';
 
     displaySummary(result.summary);
+    const parentElement = document.getElementById('feature-container');
+    if (result.hasOwnProperty("features")) {
+        createList(result.features, parentElement);
+        parentElement.innerHTML += " \n <div class=\"copytext-container\"> <button class=\"copytext\" onclick=\"copyFuncFeat()\"><i class=\"fa fa-clone\"></i></button> </div>"
+    };
 });
 
 function displaySummary(summary) {
     const summaryContainer = document.getElementById('summary-container');
     summaryContainer.innerHTML = summary.replace(/\n/g, '<br>');
-    summaryContainer.innerHTML += " \n <div class=\"copytext-container\"> <button class=\"copytext\" onclick=\"copyFunc()\"><i class=\"fa fa-clone\"></i></button> </div>"
+    summaryContainer.innerHTML += " \n <div class=\"copytext-container\"> <button class=\"copytext\" onclick=\"copyFuncSum()\"><i class=\"fa fa-clone\"></i></button> </div>"
     // Show the summary card
     document.getElementById('summary-card').style.display = 'block';
 }
 
-function copyFunc(){
+function createList(obj, parentElement) {
+    const ul = document.createElement('ul');
+  
+    for (const key in obj) {
+      if (obj.hasOwnProperty(key)) {
+        const li = document.createElement('li');
+        li.textContent = key + ': ';
+  
+        if (typeof obj[key] === 'object' && obj[key] !== null) {
+          createList(obj[key], li);
+        } else {
+          li.textContent += obj[key];
+        }
+  
+        ul.appendChild(li);
+      }
+    }
+  
+    parentElement.appendChild(ul);
+  }
+
+
+function copyFuncSum(){
     var copyText = document.getElementById('summary-container').innerText;
+    navigator.clipboard.writeText(copyText); 
+}
+
+function copyFuncFeat(){
+    var copyText = document.getElementById('feature-container').innerText;
     navigator.clipboard.writeText(copyText); 
 }

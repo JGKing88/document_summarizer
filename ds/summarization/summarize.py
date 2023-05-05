@@ -5,7 +5,7 @@ from summarization.aggregate_summary import aggregate_summary
 from summarization.segment_input import segment_text
 import tiktoken
 import openai
-import ds_config
+import ds.ds_config as ds_config
 import json
 
 with open("config.json") as json_data_file:
@@ -71,7 +71,7 @@ def transform_extras(extra_info):
       output += "\"" + extra + "\", "
 
   output += "Populate each of the additional keys (K) with a JSON object, where each key in that JSON object is \
-    an instance of K in the text we are summarizing. For example, if our additional keys are 'vocabulary' and 'characters', \
+    an instance of K in the text we are summarizing. For example, if our additional keys are vocabulary' and 'characters', \
       return: "
   example = {
     "summary": "example summary",
@@ -83,7 +83,7 @@ def transform_extras(extra_info):
       "example character 1": "description of example character 1"
     }
   }
-  output += str(example).replace('{', '{{').replace('}', '}}') + ". "
+  output += str(example).replace("{", "{{").replace("}", "}}") + ". "
   return output
 
 def aggregate_features(features):
@@ -99,19 +99,23 @@ def aggregate_features(features):
         prompt = f"Combine the following definitions/descriptions of \"{instance}\" into one cohesive definition/description: \
           {features[feature][instance]}. Make sure the output is in plain text."
         response = callGPT(prompt)
-        features[feature][instance] = response
+        features[feature][instance] = response[0]
+      else:
+        features[feature][instance] = list(features[feature][instance])[0]
 
 
 
 if __name__ == "__main__":
 
-  with open("/Users/patricktimons/Documents/GitHub/document_summarizer/ds/summarization/thedead.txt", "r") as f:
+  with open("thedead.txt", "r") as f:
     data = f.read()
 
   user_information = "kid"
   summary_details = "short"
   extras = "vocabulary, themes, characters"
   summary, features = prepare_summary(data, user_information,summary_details,extras)
-  print("the summary: \n" + summary)
-  print("the features: \n" + str(features))
-  
+  # print("the summary: \n" + summary)
+  # print("the features: \n" + str(features))  
+  dic = { "summary": summary, "features": features}
+  print(dic)
+  print(json.dumps(dic))
