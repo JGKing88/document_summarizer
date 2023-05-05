@@ -1,17 +1,17 @@
 import configparser
 config = configparser.ConfigParser()
 
-from aggregate_summary import aggregate_summary # from summarization.aggregate_summary import aggregate_summary
-from segment_input import segment_text # from summarization.segment_input import segment_text
+from summarization.aggregate_summary import aggregate_summary
+from summarization.segment_input import segment_text
 import tiktoken
 import openai
-# import ds_config
+import ds_config
 import json
 
 with open("config.json") as json_data_file:
   data = json.load(json_data_file)
   CONTEXT_WINDOW = int(data["summarization"]["CONTEXT_WINDOW"])
-  openai.api_key = data["summarization"]["API_KEY"] #ds_config.api_key()
+  openai.api_key = ds_config.api_key()
 
 
 def summarize(input, combine_prompt, single_prompt, CONTEXT_WINDOW=CONTEXT_WINDOW, summary_length=None):
