@@ -56,6 +56,21 @@ def aggregate_summary(input, combine_prompt, single_prompt, bandwidth, output_le
 
 def combine_summaries(text1, text2, prompt, bandwidth, output, output_index, cur_agg_length, aux_attr, combine_summaries=True):
   enc = tiktoken.encoding_for_model("gpt-4")
+  
+  # gather title info if haven't gathered yet
+  if output_index == 0 and "title" not in aux_attr:
+    prompt = "What is the title of this document? Answer only with the title of the document in quotes, or if the title is unknown, \
+      respond with \"a text document\": " + text1
+    message = [{"role": "user", "content": prompt}]
+    response = openai.ChatCompletion.create(
+          model="gpt-4",
+          messages=message,
+          temperature=0.2,
+          max_tokens=bandwidth,
+      )
+    aux_attr["title"] = response.choices[0].message.content
+
+  # prompt to combine summaries
   if combine_summaries:
     prompt = prompt.format(text1, text2)
   else:
@@ -72,7 +87,7 @@ def combine_summaries(text1, text2, prompt, bandwidth, output, output_index, cur
   except:
     print("ERROR: unable to load GPT resonse as a json")
     return ""
-  
+  print("response message", response_message)
   for attr in response_message:
     if attr == "summary":
       output[output_index] = response_message[attr]
@@ -83,7 +98,9 @@ def combine_summaries(text1, text2, prompt, bandwidth, output, output_index, cur
     else:
       if attr not in aux_attr:
         aux_attr[attr] = dict()
+      print("rs", response_message, "\nattr", attr)
       for sub_key in response_message[attr]:
+        print("subkey", sub_key)
         if sub_key not in aux_attr[attr]:
           aux_attr[attr][sub_key] = set()
         aux_attr[attr][sub_key].add(response_message[attr][sub_key])
