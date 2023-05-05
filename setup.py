@@ -9,7 +9,7 @@ with open('README.md') as readme_file:
 requirements = [
     "ConfigParser==5.3.0",
     "openai==0.27.4",
-    "dftotext==2.2.2",
+    "pdftotext==2.2.2",
     "tiktoken==0.3.3",
     "Flask==2.2.3",
     "Flask-Cors==3.0.10",
