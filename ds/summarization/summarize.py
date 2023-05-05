@@ -13,6 +13,8 @@ with open("config.json") as json_data_file:
   CONTEXT_WINDOW = int(data["summarization"]["CONTEXT_WINDOW"])
   openai.api_key = data["summarization"]["API_KEY"] #ds_config.api_key()
 
+from GPT import callGPT
+
 
 def summarize(input, combine_prompt, single_prompt, CONTEXT_WINDOW=CONTEXT_WINDOW, summary_length=None):
     if summary_length == None:
@@ -22,20 +24,6 @@ def summarize(input, combine_prompt, single_prompt, CONTEXT_WINDOW=CONTEXT_WINDO
     segmented_input = segment_text(input, SEGMENT_LENGTH=MAX_SEGMENT_LENGTH)
     summary, aux_attr = aggregate_summary(segmented_input, combine_prompt, single_prompt, bandwidth=MAX_SEGMENT_LENGTH, output_length=summary_length)
     return summary, aux_attr
-
-def callGPT(prompt_prompt, max_sum_len=1000):
-  try:
-    prompt = openai.ChatCompletion.create(
-        model="gpt-4",
-        messages=[
-                {"role": "user", "content": prompt_prompt},
-            ],
-        temperature=0.2, #[0,2] higher values are more random (want low randomnes)
-        max_tokens=max(1000, max_sum_len),
-    )
-    return prompt.choices[0].message.content
-  except:
-    return ""
 
 def prepare_summary(document, user_information="", summary_details="", extras=""):
   single_prompt_prompt = "Generate a prompt to tell ChatGPT to generate a summary of a document \
@@ -63,11 +51,11 @@ def prepare_summary(document, user_information="", summary_details="", extras=""
 def transform_extras(extra_info):
   """
   inputs:
-  extra_info: a comma seperated list of desired features: extra1, extra2,extra3,...
+  extra_info: a comma seperated list of desired features: extra1,extra2,extra3,...
   outputs:
   the extras portion of the prompt
   """
-  extras = extra_info.replace(" ", "").split(",")
+  extras = extra_info.split(",")
 
   output = "Return the summary in JSON format, where \"summary\" is the key corresponding to the generated summary, \
     Also include the additional keys: "
@@ -150,7 +138,7 @@ if __name__ == "__main__":
 
   user_information = "10 year old with ADHD that rarely reads"
   summary_details = "2-3 paragraphs"
-  extras = "vocabulary, BLEU-scores, authors"
+  extras = "vocabulary"
   summary, features = prepare_summary(data, user_information,summary_details,extras)
   print("the summary: \n" + summary)
   print("the features: \n" + str(features))

@@ -3,6 +3,8 @@ import threading
 import openai
 import json
 
+from GPT import callGPT
+
 def aggregate_summary(input, combine_prompt, single_prompt, bandwidth, output_length, aux_attr=None):
   """
   input: list of summaries (each summary is a string)
@@ -59,38 +61,24 @@ def combine_summaries(text1, text2, prompt, bandwidth, output, output_index, cur
   
   # gather title info if haven't gathered yet
   if output_index == 0 and "title" not in aux_attr:
-    prompt = "What is the title of this document? Answer only with the title of the document in quotes, or if the title is unknown, \
+    title_prompt = "What is the title of this document? Answer only with the title of the document in quotes, or if the title is unknown, \
       respond with \"a text document\": " + text1
-    message = [{"role": "user", "content": prompt}]
-    response = openai.ChatCompletion.create(
-          model="gpt-4",
-          messages=message,
-          temperature=0.2,
-          max_tokens=bandwidth,
-      )
-    aux_attr["title"] = response.choices[0].message.content
+    aux_attr["title"] = callGPT(title_prompt, bandwidth)
 
   # prompt to combine summaries
   if combine_summaries:
     prompt = prompt.format(text1, text2)
   else:
     prompt = prompt.format(text1)
-  message = [{"role": "user", "content": prompt}]
-  response = openai.ChatCompletion.create(
-        model="gpt-4",
-        messages=message,
-        temperature=0.2,
-        max_tokens=bandwidth,
-    )
+  response = callGPT(prompt, bandwidth)
   try:
-    response_message = json.loads(response.choices[0].message.content)
+    response_JSON = json.loads(response)
   except:
     print("ERROR: unable to load GPT resonse as a json")
     return ""
-  print("response message", response_message)
-  for attr in response_message:
+  for attr in response_JSON:
     if attr == "summary":
-      output[output_index] = response_message[attr]
+      output[output_index] = response_JSON[attr]
       if combine_summaries:
         cur_agg_length[0] += len(enc.encode(output[output_index])) - len(enc.encode(text1)) - len(enc.encode(text2))
       else:
@@ -98,9 +86,7 @@ def combine_summaries(text1, text2, prompt, bandwidth, output, output_index, cur
     else:
       if attr not in aux_attr:
         aux_attr[attr] = dict()
-      print("rs", response_message, "\nattr", attr)
-      for sub_key in response_message[attr]:
-        print("subkey", sub_key)
+      for sub_key in response_JSON[attr]:
         if sub_key not in aux_attr[attr]:
           aux_attr[attr][sub_key] = set()
-        aux_attr[attr][sub_key].add(response_message[attr][sub_key])
+        aux_attr[attr][sub_key].add(response_JSON[attr][sub_key])
